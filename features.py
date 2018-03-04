@@ -131,8 +131,7 @@ class HarrisKeypointDetector(KeypointDetector):
 
 		# det(H) = AC-B^2	trace(H) = A+C
 		harrisImage = np.multiply(A,C)-np.square(B) - 0.1*np.square(A+C)
-		# harrisImage = np.linalg.det(H) - 0.1*np.square(np.trace(H))
-		orientationImage = np.arctan2(Iy, Ix) * 180 / np.pi
+		orientationImage = np.degrees(np.arctan2(Iy, Ix))
 
 		print(np.max(harrisImage))
 		# TODO-BLOCK-END
@@ -209,8 +208,8 @@ class HarrisKeypointDetector(KeypointDetector):
 				# TODO-BLOCK-BEGIN
 				f.size = 10
 				f.pt = (x,y)
-				f.angle = orientationImage[x,y]
-				f.response = harrisImage[x,y]
+				f.angle = orientationImage[y,x]
+				f.response = harrisImage[y,x]
 				# raise Exception("TODO in features.py not implemented")
 				# TODO-BLOCK-END
 

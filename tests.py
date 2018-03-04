@@ -29,8 +29,12 @@ def compare_array(arr1, arr2):
 def compare_cv2_points(pnt1, pnt2):
     if not np.isclose(pnt1.pt[0],pnt2.pt[0],rtol=1e-3,atol=1e-5): return False
     if not np.isclose(pnt1.pt[1],pnt2.pt[1],rtol=1e-3,atol=1e-5): return False
-    if not np.isclose(pnt1.angle,pnt2.angle,rtol=1e-3,atol=1e-5): return False
-    if not np.isclose(pnt1.response,pnt2.response,rtol=1e-3,atol=1e-5): return False
+    if not np.isclose(pnt1.angle,pnt2.angle,rtol=1e-3,atol=1e-5): 
+        print('angle prob: ', pnt1.angle, pnt2.angle)
+        return False
+    if not np.isclose(pnt1.response,pnt2.response,rtol=1e-3,atol=1e-5): 
+        print('score prob: ', pnt1.response, pnt2.response) 
+        return False
     return True
 
 # Testing function
