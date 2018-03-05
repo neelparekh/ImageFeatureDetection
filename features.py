@@ -310,7 +310,6 @@ class MOPSFeatureDescriptor(FeatureDescriptor):
 		desc = np.zeros((len(keypoints), windowSize * windowSize))
 		grayImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 		grayImage = ndimage.gaussian_filter(grayImage, 0.5)
-
 		for i, f in enumerate(keypoints):
 			# TODO 5: Compute the transform as described by the feature
 			# location/orientation. You will need to compute the transform
@@ -323,12 +322,16 @@ class MOPSFeatureDescriptor(FeatureDescriptor):
 			x,y = f.pt
 			angle = f.angle
 
-			T1 = transformations.get_trans_mx(np.array([-x,-y,0])) # translate in x and y to center the image around keypoint
-			R = transformations.get_rot_mx(0,0,-angle) # rotate around z axis so gradient is along 0 deg
-			S = transformations.get_scale_mx(0.2,0.2,0) # scale by 1/5 = 0.2
-			T2 = transformations.get_trans_mx(np.array([19,19,0]))
+			c = np.cos(np.radians(-angle))
+			s = np.sin(np.radians(-angle))
 
-			transMx = T2.dot(S.dot(R.dot(T1)))[:2,:3]
+			T1 = np.array([[1,0,-x],[0,1,-y],[0,0,1]])
+			R  = np.array([[c,-s,0],[s,c,0],[0,0,1]])
+			S  = np.array([[0.2,0,0],[0,0.2,0],[0,0,1]])
+			T2 = np.array([[1,0,4],[0,1,4],[0,0,1]])
+
+			transMx = T2.dot(S.dot(R.dot(T1)))
+			transMx = transMx[:2,:]
 			# raise Exception("TODO in features.py not implemented")
 			# TODO-BLOCK-END
 
@@ -337,20 +340,21 @@ class MOPSFeatureDescriptor(FeatureDescriptor):
 			destImage = cv2.warpAffine(grayImage, transMx,
 				(windowSize, windowSize), flags=cv2.INTER_LINEAR)
 
+
 			# TODO 6: Normalize the descriptor to have zero mean and unit
 			# variance. If the variance is zero then set the descriptor
 			# vector to zero. Lastly, write the vector to desc.
 			# TODO-BLOCK-BEGIN
-			var = destImage.var()
-			if var<=1e-5:
+
+			std = destImage.std()
+			if std<=1e-5:
 				descriptor = np.zeros((1,64))
 			else:
-				descriptor = np.divide( destImage - destImage.mean(), var) 
+				descriptor = np.divide( destImage - destImage.mean(), std) 
 
 			desc[i,:] = descriptor.flatten()
 			# raise Exception("TODO in features.py not implemented")
 			# TODO-BLOCK-END
-
 		return desc
 
 
@@ -474,7 +478,9 @@ class SSDFeatureMatcher(FeatureMatcher):
 		# Note: multiple features from the first image may match the same
 		# feature in the second image.
 		# TODO-BLOCK-BEGIN
-		raise Exception("TODO in features.py not implemented")
+		desc1
+
+		# raise Exception("TODO in features.py not implemented")
 		# TODO-BLOCK-END
 
 		return matches
