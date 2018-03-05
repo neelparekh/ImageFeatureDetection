@@ -323,10 +323,10 @@ class MOPSFeatureDescriptor(FeatureDescriptor):
 			x,y = f.pt
 			angle = f.angle
 
-			T1 = transformations.get_trans_mx(np.array([x,y,0])) # translate in x,y only to center the image around keypoint
-			R = transformations.get_rot_mx(0,0,angle) # rotate around z axis only so gradient is along 0 deg
+			T1 = transformations.get_trans_mx(np.array([-x,-y,0])) # translate in x and y to center the image around keypoint
+			R = transformations.get_rot_mx(0,0,-angle) # rotate around z axis so gradient is along 0 deg
 			S = transformations.get_scale_mx(0.2,0.2,0) # scale by 1/5 = 0.2
-			T2 = transformations.get_trans_mx(np.array([20,20,0]))
+			T2 = transformations.get_trans_mx(np.array([19,19,0]))
 
 			transMx = T2.dot(S.dot(R.dot(T1)))[:2,:3]
 			# raise Exception("TODO in features.py not implemented")
@@ -342,7 +342,7 @@ class MOPSFeatureDescriptor(FeatureDescriptor):
 			# vector to zero. Lastly, write the vector to desc.
 			# TODO-BLOCK-BEGIN
 			var = destImage.var()
-			if var==0:
+			if var<=1e-5:
 				descriptor = np.zeros((1,64))
 			else:
 				descriptor = np.divide( destImage - destImage.mean(), var) 
