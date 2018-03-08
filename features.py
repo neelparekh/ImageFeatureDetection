@@ -277,7 +277,7 @@ class SimpleFeatureDescriptor(FeatureDescriptor):
 			s1,s2 = grayImage.shape
 			if x in [0,1,s2-1,s2-2] or y in [0,1,s1-1,s1-2]:
 				grayImage_pad = np.pad(grayImage,2,'constant',constant_values=0)
-				descriptor = grayImage_pad[ x:x+5, y:y+5 ]
+				descriptor = grayImage_pad[ y:y+5, x:x+5 ]
 			else:
 				x_beg, y_beg = x-2, y-2
 				x_end, y_end = x+3, y+3
@@ -470,15 +470,18 @@ class SSDFeatureMatcher(FeatureMatcher):
 		assert desc1.shape[1] == desc2.shape[1]
 
 		if desc1.shape[0] == 0 or desc2.shape[0] == 0:
-			return []
+			return matches
 
 		# TODO 7: Perform simple feature matching.  This uses the SSD
-		# distance between two feature vectors, and matches a feature in
-		# the first image with the closest feature in the second image.
-		# Note: multiple features from the first image may match the same
-		# feature in the second image.
+
+		for index, feature_1 in enumerate(desc1):
+			distance = desc2 - feature_1
+			ssd = np.array([np.sum(np.square(single_dist)) for single_dist in distance])
+			minimum_two = ssd.argsort()[:2]
+
+			matches.append(cv2.DMatch(index, minimum_two[0], ssd[minimum_two[0]]))
+
 		# TODO-BLOCK-BEGIN
-		desc1
 
 		# raise Exception("TODO in features.py not implemented")
 		# TODO-BLOCK-END
@@ -515,6 +518,14 @@ class RatioFeatureMatcher(FeatureMatcher):
 			return []
 
 		# TODO 8: Perform ratio feature matching.
+
+		for index, feature_1 in enumerate(desc1):
+			distance = desc2 - feature_1
+			ssd = np.array([np.sum(np.square(single_dist)) for single_dist in distance])
+			minimum_two = ssd.argsort()[:2]
+
+			matches.append(cv2.DMatch(index, minimum_two[0], ssd[minimum_two[0]] / ssd[minimum_two[1]]))
+
 		# This uses the ratio of the SSD distance of the two best matches
 		# and matches a feature in the first image with the closest feature in the
 		# second image.
@@ -522,7 +533,7 @@ class RatioFeatureMatcher(FeatureMatcher):
 		# feature in the second image.
 		# You don't need to threshold matches in this function
 		# TODO-BLOCK-BEGIN
-		raise Exception("TODO in features.py not implemented")
+		# raise Exception("TODO in features.py not implemented")
 		# TODO-BLOCK-END
 
 		return matches
