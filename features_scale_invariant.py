@@ -14,7 +14,7 @@ import random
 NUMBER_OF_SCALES = 4
 sigma_pyramid = 1
 
-ALL_VALUES_ALL_SCALES = False
+ALL_VALUES_ALL_SCALES = True
 USE_VARIANCE = False
 
 
