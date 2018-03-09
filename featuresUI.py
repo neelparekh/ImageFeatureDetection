@@ -13,7 +13,7 @@ import cv2
 from PIL import Image, ImageTk, ImageDraw
 
 import benchmark
-import features
+import features_scale_invariant as features
 
 BUTTON_WIDTH = 14
 SLIDER_LENGTH = 250
